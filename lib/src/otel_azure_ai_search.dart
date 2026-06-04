@@ -2,7 +2,6 @@
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
 import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
-import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_azure_ai_search_suppression.dart';
 
@@ -70,76 +69,112 @@ Future<T> tracedAzureAiSearch<T>({
   final t = tracer ?? OTel.tracerProvider().getTracer('otel_azure_ai_search');
   final span = t.startSpan('azure_ai_search $operation', kind: SpanKind.client);
   try {
-    span.setStringAttribute('rpc.system', 'azure');
-    span.setStringAttribute('rpc.service', 'AISearch');
-    span.setStringAttribute('rpc.method', operation);
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('rpc.system', 'azure')]));
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('rpc.service', 'AISearch')]));
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('rpc.method', operation)]));
     final r = await invoke();
     final res = r.result;
     if (res != null) {
       if (res.serviceName != null) {
-        span.setStringAttribute(
-            'azure.ai_search.service.name', res.serviceName!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('azure.ai_search.service.name', res.serviceName!)
+        ]));
       }
       if (res.region != null) {
-        span.setStringAttribute('azure.region', res.region!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('azure.region', res.region!)]));
       }
       if (res.skuName != null) {
-        span.setStringAttribute('azure.ai_search.sku.name', res.skuName!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('azure.ai_search.sku.name', res.skuName!)]));
       }
       if (res.indexName != null) {
-        span.setStringAttribute('azure.ai_search.index.name', res.indexName!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('azure.ai_search.index.name', res.indexName!)
+        ]));
       }
       if (res.indexerName != null) {
-        span.setStringAttribute(
-            'azure.ai_search.indexer.name', res.indexerName!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('azure.ai_search.indexer.name', res.indexerName!)
+        ]));
       }
       if (res.indexerStatus != null) {
-        span.setStringAttribute(
-            'azure.ai_search.indexer.status', res.indexerStatus!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString(
+              'azure.ai_search.indexer.status', res.indexerStatus!)
+        ]));
       }
       if (res.queryType != null) {
-        span.setStringAttribute('azure.ai_search.query.type', res.queryType!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('azure.ai_search.query.type', res.queryType!)
+        ]));
       }
       if (res.searchMode != null) {
-        span.setStringAttribute('azure.ai_search.search_mode', res.searchMode!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('azure.ai_search.search_mode', res.searchMode!)
+        ]));
       }
       if (res.scoringProfile != null) {
-        span.setStringAttribute(
-            'azure.ai_search.scoring_profile', res.scoringProfile!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString(
+              'azure.ai_search.scoring_profile', res.scoringProfile!)
+        ]));
       }
       if (res.documentsReturned != null) {
-        span.setIntAttribute(
-            'azure.ai_search.documents_returned', res.documentsReturned!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt(
+              'azure.ai_search.documents_returned', res.documentsReturned!)
+        ]));
       }
       if (res.totalCount != null) {
-        span.setIntAttribute('azure.ai_search.total_count', res.totalCount!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('azure.ai_search.total_count', res.totalCount!)
+        ]));
       }
       if (res.searchScore != null) {
-        span.setDoubleAttribute('azure.ai_search.top_score', res.searchScore!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeDouble('azure.ai_search.top_score', res.searchScore!)
+        ]));
       }
       if (res.semanticConfiguration != null) {
-        span.setStringAttribute('azure.ai_search.semantic.configuration',
-            res.semanticConfiguration!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('azure.ai_search.semantic.configuration',
+              res.semanticConfiguration!)
+        ]));
       }
       if (res.semanticAnswers != null) {
-        span.setIntAttribute(
-            'azure.ai_search.semantic.answers', res.semanticAnswers!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt(
+              'azure.ai_search.semantic.answers', res.semanticAnswers!)
+        ]));
       }
       if (res.vectorTopK != null) {
-        span.setIntAttribute('azure.ai_search.vector.top_k', res.vectorTopK!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('azure.ai_search.vector.top_k', res.vectorTopK!)
+        ]));
       }
       if (res.vectorQueriesCount != null) {
-        span.setIntAttribute(
-            'azure.ai_search.vector.queries_count', res.vectorQueriesCount!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt(
+              'azure.ai_search.vector.queries_count', res.vectorQueriesCount!)
+        ]));
       }
       if (res.facetCount != null) {
-        span.setIntAttribute('azure.ai_search.facet_count', res.facetCount!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeInt('azure.ai_search.facet_count', res.facetCount!)
+        ]));
       }
       if (res.statusCode != null) {
-        span.setIntAttribute('http.response.status_code', res.statusCode!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('http.response.status_code', res.statusCode!)]));
       }
       if (res.errorCode != null) {
-        span.setStringAttribute('azure.ai_search.error.code', res.errorCode!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString('azure.ai_search.error.code', res.errorCode!)
+        ]));
       }
       final fail = res.errorCode != null ||
           (res.statusCode != null && res.statusCode! >= 400) ||
@@ -147,8 +182,10 @@ Future<T> tracedAzureAiSearch<T>({
           res.indexerStatus == 'persistentFailure' ||
           res.indexerStatus == 'error';
       if (fail) {
-        span.setStringAttribute(ErrorResource.errorType.key,
-            res.errorCode ?? 'azure_ai_search.error');
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString(ErrorResource.errorType.key,
+              res.errorCode ?? 'azure_ai_search.error')
+        ]));
         span.setStatus(SpanStatusCode.Error, res.errorMessage);
       }
     }
