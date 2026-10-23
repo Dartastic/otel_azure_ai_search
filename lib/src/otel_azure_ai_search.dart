@@ -1,11 +1,12 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_azure_ai_search_suppression.dart';
 
 class AzureAiSearchResult {
+  /// Creates a result.
   const AzureAiSearchResult({
     this.serviceName,
     this.region,
@@ -51,8 +52,13 @@ class AzureAiSearchResult {
   final String? errorMessage;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class AzureAiSearchCallResult<T> {
+  /// Creates a call result.
   const AzureAiSearchCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final AzureAiSearchResult? result;
 }
@@ -60,120 +66,126 @@ class AzureAiSearchCallResult<T> {
 Future<T> tracedAzureAiSearch<T>({
   required String operation,
   required Future<AzureAiSearchCallResult<T>> Function() invoke,
-  Tracer? tracer,
+  APITracer? tracer,
 }) async {
   if (azureAiSearchInstrumentationSuppressed()) {
     final r = await invoke();
     return r.value;
   }
-  final t = tracer ?? OTel.tracerProvider().getTracer('otel_azure_ai_search');
+  final t =
+      tracer ?? OTelAPI.tracerProvider().getTracer('otel_azure_ai_search');
   final span = t.startSpan('azure_ai_search $operation', kind: SpanKind.client);
   try {
     span.addAttributes(
-        OTel.attributes([OTel.attributeString('rpc.system', 'azure')]));
+        OTelAPI.attributes([OTelAPI.attributeString('rpc.system', 'azure')]));
+    span.addAttributes(OTelAPI.attributes(
+        [OTelAPI.attributeString('rpc.service', 'AISearch')]));
     span.addAttributes(
-        OTel.attributes([OTel.attributeString('rpc.service', 'AISearch')]));
-    span.addAttributes(
-        OTel.attributes([OTel.attributeString('rpc.method', operation)]));
+        OTelAPI.attributes([OTelAPI.attributeString('rpc.method', operation)]));
     final r = await invoke();
     final res = r.result;
     if (res != null) {
       if (res.serviceName != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('azure.ai_search.service.name', res.serviceName!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
+              'azure.ai_search.service.name', res.serviceName!)
         ]));
       }
       if (res.region != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('azure.region', res.region!)]));
+        span.addAttributes(OTelAPI.attributes(
+            [OTelAPI.attributeString('azure.region', res.region!)]));
       }
       if (res.skuName != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeString('azure.ai_search.sku.name', res.skuName!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('azure.ai_search.sku.name', res.skuName!)
+        ]));
       }
       if (res.indexName != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('azure.ai_search.index.name', res.indexName!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('azure.ai_search.index.name', res.indexName!)
         ]));
       }
       if (res.indexerName != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('azure.ai_search.indexer.name', res.indexerName!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
+              'azure.ai_search.indexer.name', res.indexerName!)
         ]));
       }
       if (res.indexerStatus != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString(
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
               'azure.ai_search.indexer.status', res.indexerStatus!)
         ]));
       }
       if (res.queryType != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('azure.ai_search.query.type', res.queryType!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('azure.ai_search.query.type', res.queryType!)
         ]));
       }
       if (res.searchMode != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('azure.ai_search.search_mode', res.searchMode!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
+              'azure.ai_search.search_mode', res.searchMode!)
         ]));
       }
       if (res.scoringProfile != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString(
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(
               'azure.ai_search.scoring_profile', res.scoringProfile!)
         ]));
       }
       if (res.documentsReturned != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt(
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt(
               'azure.ai_search.documents_returned', res.documentsReturned!)
         ]));
       }
       if (res.totalCount != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt('azure.ai_search.total_count', res.totalCount!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('azure.ai_search.total_count', res.totalCount!)
         ]));
       }
       if (res.searchScore != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeDouble('azure.ai_search.top_score', res.searchScore!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeDouble('azure.ai_search.top_score', res.searchScore!)
         ]));
       }
       if (res.semanticConfiguration != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('azure.ai_search.semantic.configuration',
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('azure.ai_search.semantic.configuration',
               res.semanticConfiguration!)
         ]));
       }
       if (res.semanticAnswers != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt(
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt(
               'azure.ai_search.semantic.answers', res.semanticAnswers!)
         ]));
       }
       if (res.vectorTopK != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt('azure.ai_search.vector.top_k', res.vectorTopK!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('azure.ai_search.vector.top_k', res.vectorTopK!)
         ]));
       }
       if (res.vectorQueriesCount != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt(
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt(
               'azure.ai_search.vector.queries_count', res.vectorQueriesCount!)
         ]));
       }
       if (res.facetCount != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeInt('azure.ai_search.facet_count', res.facetCount!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('azure.ai_search.facet_count', res.facetCount!)
         ]));
       }
       if (res.statusCode != null) {
-        span.addAttributes(OTel.attributes(
-            [OTel.attributeInt('http.response.status_code', res.statusCode!)]));
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeInt('http.response.status_code', res.statusCode!)
+        ]));
       }
       if (res.errorCode != null) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString('azure.ai_search.error.code', res.errorCode!)
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString('azure.ai_search.error.code', res.errorCode!)
         ]));
       }
       final fail = res.errorCode != null ||
@@ -182,8 +194,8 @@ Future<T> tracedAzureAiSearch<T>({
           res.indexerStatus == 'persistentFailure' ||
           res.indexerStatus == 'error';
       if (fail) {
-        span.addAttributes(OTel.attributes([
-          OTel.attributeString(ErrorResource.errorType.key,
+        span.addAttributes(OTelAPI.attributes([
+          OTelAPI.attributeString(ErrorAttributes.errorType.key,
               res.errorCode ?? 'azure_ai_search.error')
         ]));
         span.setStatus(SpanStatusCode.Error, res.errorMessage);
